@@ -25,15 +25,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void delete(User user) {
-        User attachedUser = em.find(User.class, user.getId());
+    public void delete(long id) {
+        User attachedUser = em.find(User.class, id);
         if (attachedUser != null) {
             em.remove(attachedUser);
         }
     }
 
     @Override
-    public void update(User user) {
-        em.merge(user);
+    public void update(long idToUpdate, User user) {
+        User userToUpdate = em.find(User.class, idToUpdate);
+        if (userToUpdate != null) {
+            userToUpdate.mergeWith(user);
+            em.merge(userToUpdate);
+        }
     }
 }

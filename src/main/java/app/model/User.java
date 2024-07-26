@@ -55,4 +55,14 @@ public class User {
     public void setAge(int age) {
         this.age = age;
     }
+
+    public void mergeWith(User user) {
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.age = user.getAge();
+    }
+
+    public boolean checkForAnyInvalid() {
+        return firstName.isEmpty() || lastName.isEmpty() || age < 0;
+    }
 }
