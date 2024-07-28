@@ -1,9 +1,8 @@
-package web.controller;
+package app.controller;
 
-import app.config.AppConfig;
 import app.model.User;
 import app.service.UserService;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +14,13 @@ import java.util.List;
 @Controller
 public class UserController {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+	private final ApplicationContext context;
 
-    @GetMapping(value = "/")
+	public UserController(ApplicationContext context) {
+		this.context = context;
+	}
+
+	@GetMapping(value = "/")
 	public String printUser(Model model) {
 		List<User> users = context.getBean(UserService.class).getUsers();
 		model.addAttribute("users", users);

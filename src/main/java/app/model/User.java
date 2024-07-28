@@ -1,6 +1,6 @@
 package app.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "user")
@@ -18,15 +18,6 @@ public class User {
 
     @Column(name = "age")
     private int age;
-
-    public User() {
-    }
-
-    public User(String firstName, String lastName, int age) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-    }
 
     public long getId() {
         return id;
