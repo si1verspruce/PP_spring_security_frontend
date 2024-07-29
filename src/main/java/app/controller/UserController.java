@@ -1,6 +1,8 @@
 package app.controller;
 
+import app.model.Role;
 import app.model.User;
+import app.service.RoleService;
 import app.service.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -23,8 +25,10 @@ public class UserController {
 	@GetMapping(value = "/")
 	public String printUser(Model model) {
 		List<User> users = context.getBean(UserService.class).getUsers();
+		List<Role> roles = context.getBean(RoleService.class).getRoles();
 		model.addAttribute("users", users);
 		model.addAttribute("user", new User());
+		model.addAttribute("roles", roles);
 		return "index";
 	}
 

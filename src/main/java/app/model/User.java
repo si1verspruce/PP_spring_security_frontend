@@ -1,6 +1,9 @@
 package app.model;
 
+import app.RoleName;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -18,6 +21,9 @@ public class User {
 
     @Column(name = "age")
     private int age;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Role> roles;
 
     public long getId() {
         return id;
@@ -47,13 +53,23 @@ public class User {
         this.age = age;
     }
 
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
     public void mergeWith(User user) {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.age = user.getAge();
+        this.roles = user.getRoles();
     }
 
     public boolean checkForAnyInvalid() {
-        return firstName.isEmpty() || lastName.isEmpty() || age < 0;
+        return firstName.isEmpty() || lastName.isEmpty() || age < 0 || roles == null || roles.isEmpty()
+                || roles.stream().map(Role::getName).anyMatch(roleName -> !RoleName.contains(roleName));
     }
 }
