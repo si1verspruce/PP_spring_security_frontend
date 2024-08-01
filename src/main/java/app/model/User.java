@@ -1,9 +1,8 @@
 package app.model;
 
-import app.RoleName;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -22,8 +21,13 @@ public class User {
     @Column(name = "age")
     private int age;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Role> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
     public long getId() {
         return id;
@@ -53,11 +57,11 @@ public class User {
         this.age = age;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
@@ -66,10 +70,5 @@ public class User {
         this.lastName = user.getLastName();
         this.age = user.getAge();
         this.roles = user.getRoles();
-    }
-
-    public boolean checkForAnyInvalid() {
-        return firstName.isEmpty() || lastName.isEmpty() || age < 0 || roles == null || roles.isEmpty()
-                || roles.stream().map(Role::getName).anyMatch(roleName -> !RoleName.contains(roleName));
     }
 }

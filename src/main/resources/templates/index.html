@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <title></title>
     <style>
-        label, input {
+        label, input, select {
             display: block;
         }
     </style>
 </head>
-<header><h1>Index</h1></header>
+<header><h1>Choose action</h1></header>
 <body style="display: flex; flex-direction: column">
-<div>
+<div style="float: left;margin-right: 20px;">
     <table th:border="1">
         <thead>
         <tr>
@@ -28,15 +28,45 @@
             <td><span th:text="${user.firstName}"></span></td>
             <td><span th:text="${user.lastName}"></span></td>
             <td><span th:text="${user.age}"></span></td>
-            <td>
-                <span th:each="role:${roles}"
-                <span th:text="${#lists.sort(user.roles)}"></span>
-            </td>
+            <td><span th:text="${user.roles}"></span></td>
         </tr>
         </tbody>
     </table>
 </div>
-<div style="margin-top: 20px">
+<div style="float: left;margin-right: 20px;">
+    <table th:border="1">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Role Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="role:${roles_data}">
+            <td><span th:text="${role.id}"></span></td>
+            <td><span th:text="${role.name}"></span></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div th:if="${role_set.size() == 0}" style="margin-top: 20px">
+    <form action="/" method="get">
+        <fieldset style="float: left">
+            <h4>Add user: set user role count</h4>
+            <div style="float: left;margin-right: 20px;">
+                <label>
+                    Role count
+                    <input type="number" name="roleCount" th:value="${roleCount}" required>
+                </label>
+            </div>
+            <div style="float: left">
+                <br>
+                <button type="submit" name="submit">Submit</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<div th:if="${role_set.size() > 0}" style="margin-top: 20px">
     <form action="/add" th:object="${user}" method="post">
         <fieldset style="float: left">
             <h4>Add user</h4>
@@ -56,6 +86,16 @@
                 <label>
                     Age
                     <input type="number" name="age" th:field="*{age}" required>
+                </label>
+            </div>
+            <div style="float: left;margin-right: 20px;">
+                <label>
+                    Role
+                    <span th:each="binding_role:${role_set}">
+                        <select th:field="${binding_role.name}">
+                            <option th:each="role:${roles_data}" th:value="${role.name}" th:text="${role.name}"></option>
+                        </select>
+                    </span>
                 </label>
             </div>
             <div style="float: left">

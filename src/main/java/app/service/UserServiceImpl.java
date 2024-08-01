@@ -5,7 +5,6 @@ import app.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 
 @Service
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void add(User user) {
-        if (user == null || user.checkForAnyInvalid()) {
+        if (user == null || checkForAnyInvalid(user)) {
             return;
         }
         userDao.add(formatUser(user));
@@ -44,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void update(long idToUpdate, User user) {
-        if (user == null || idToUpdate < 0 || user.checkForAnyInvalid()) {
+        if (user == null || idToUpdate < 0 || checkForAnyInvalid(user)) {
             return;
         }
         userDao.update(idToUpdate, formatUser(user));
@@ -52,5 +51,10 @@ public class UserServiceImpl implements UserService {
 
     private User formatUser(User user) {
         return user;
+    }
+
+    public boolean checkForAnyInvalid(User user) {
+        return user.getFirstName().isEmpty() || user.getLastName().isEmpty() || user.getAge() < 0
+                || user.getRoles() == null;
     }
 }

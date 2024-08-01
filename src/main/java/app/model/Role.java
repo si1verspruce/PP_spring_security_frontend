@@ -2,9 +2,12 @@ package app.model;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+import java.util.Set;
+
 @Entity
 @Table(name = "role")
-public class Role implements Comparable<Role> {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,9 +16,8 @@ public class Role implements Comparable<Role> {
     @Column
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    private Set<User> users;
 
     public long getId() {
         return id;
@@ -25,16 +27,16 @@ public class Role implements Comparable<Role> {
         return name;
     }
 
-    public User getUser() {
-        return user;
+    public Set<User> getUsers() {
+        return users;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override
@@ -43,7 +45,15 @@ public class Role implements Comparable<Role> {
     }
 
     @Override
-    public int compareTo(Role other) {
-        return name.compareTo(other.name);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(name, role.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
 }
