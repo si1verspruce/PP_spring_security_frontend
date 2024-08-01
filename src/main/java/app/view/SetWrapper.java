@@ -2,6 +2,7 @@ package app.view;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class SetWrapper<T> {
     private Set<T> set;
@@ -24,5 +25,13 @@ public class SetWrapper<T> {
 
     public void setSet(Set<T> set) {
         this.set = set;
+    }
+
+    public int size() {
+        return set.size();
+    }
+
+    public Stream<T> stream() {
+        return set.stream();
     }
 }

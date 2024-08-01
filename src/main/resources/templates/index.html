@@ -49,7 +49,7 @@
         </tbody>
     </table>
 </div>
-<div th:if="${role_set.size() == 0}" style="margin-top: 20px">
+<div th:if="${roles_user.size() == 0}" style="margin-top: 20px">
     <form action="/" method="get">
         <fieldset style="float: left">
             <h4>Add user: set user role count</h4>
@@ -66,7 +66,7 @@
         </fieldset>
     </form>
 </div>
-<div th:if="${role_set.size() > 0}" style="margin-top: 20px">
+<div th:if="${roles_user.size() > 0}" style="margin-top: 20px">
     <form action="/add" th:object="${user}" method="post">
         <fieldset style="float: left">
             <h4>Add user</h4>
@@ -91,11 +91,12 @@
             <div style="float: left;margin-right: 20px;">
                 <label>
                     Role
-                    <span th:each="binding_role:${role_set}">
-                        <select th:field="${binding_role.name}">
-                            <option th:each="role:${roles_data}" th:value="${role.name}" th:text="${role.name}"></option>
+                    <div style="float: left" th:each="role:${roles_user.set}">
+                        <select th:value="${role.name}">
+                            <option th:each="binding_role: ${roles_data}" th:value="${binding_role.name}"
+                                    th:text="${binding_role.name}"></option>
                         </select>
-                    </span>
+                    </div>
                 </label>
             </div>
             <div style="float: left">

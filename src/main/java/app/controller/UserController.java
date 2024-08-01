@@ -10,10 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,21 +29,27 @@ public class UserController {
     public String printUser(@RequestParam(required = false) Integer roleCount, Model model) {
         List<User> users = context.getBean(UserService.class).getUsers();
         List<Role> roles = context.getBean(RoleService.class).getRoles();
-        Set<Role> roleSet = new HashSet<>();
+        SetWrapper<Role> rolesUser = new SetWrapper<>();
         for (int i = 0; i < (roleCount == null ? 0 : roleCount); i++) {
-            roleSet.add(new Role());
+            Role newRole = new Role();
+            newRole.setName(String.valueOf(i));
+            rolesUser.add(newRole);
         }
         model.addAttribute("users", users);
         model.addAttribute("user", new User());
         model.addAttribute("roles_data", roles);
-        model.addAttribute("role_set", new SetWrapper<>(roleSet));
+        model.addAttribute("roles_user", rolesUser);
         return "index";
     }
 
     @PostMapping(value = "/add")
-    public String addUser(@ModelAttribute SetWrapper<Role> roleSet, User user) {
+    public String addUser(@ModelAttribute SetWrapper<Role> rolesUser, User user) {
         List<Role> rolesDB = context.getBean(RoleService.class).getRoles();
-        user.setRoles(rolesDB.stream().filter(roleDB -> roleSet.getSet().stream().anyMatch(roleDB::equals))
+        System.out.println(rolesUser.size());
+        for (Role role : rolesUser.getSet()) {
+            System.out.println(role.getName());
+        }
+        user.setRoles(rolesDB.stream().filter(roleDB -> rolesUser.stream().anyMatch(roleDB::equals))
                 .collect(Collectors.toSet()));
         context.getBean(UserService.class).add(user);
         return "redirect:/";
