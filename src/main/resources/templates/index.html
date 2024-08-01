@@ -92,7 +92,7 @@
                 <label>
                     Role
                     <div style="float: left" th:each="role:${roles_user.set}">
-                        <select th:value="${role.name}">
+                        <select th:field="${role.name}">
                             <option th:each="binding_role: ${roles_data}" th:value="${binding_role.name}"
                                     th:text="${binding_role.name}"></option>
                         </select>
