@@ -1,18 +1,23 @@
 package app.service;
 
 import app.dao.UserDao;
+import app.model.Role;
 import app.model.User;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final ApplicationContext context;
     private final UserDao userDao;
 
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(ApplicationContext context, UserDao userDao) {
+        this.context = context;
         this.userDao = userDao;
     }
 
@@ -50,10 +55,13 @@ public class UserServiceImpl implements UserService {
     }
 
     private User formatUser(User user) {
+        List<Role> rolesDB = context.getBean(RoleService.class).getRoles();
+        user.setRoles(rolesDB.stream().filter(roleDB -> user.getRoles().stream().anyMatch(roleDB::equals))
+                .collect(Collectors.toSet()));
         return user;
     }
 
-    public boolean checkForAnyInvalid(User user) {
+    private boolean checkForAnyInvalid(User user) {
         return user.getFirstName().isEmpty() || user.getLastName().isEmpty() || user.getAge() < 0
                 || user.getRoles() == null;
     }

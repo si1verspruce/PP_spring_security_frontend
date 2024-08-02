@@ -1,7 +1,9 @@
 package app.dto;
 
 import app.model.Role;
+import app.model.User;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class UserDto {
@@ -38,7 +40,16 @@ public class UserDto {
         return roles;
     }
 
-    public void addToRoles(List<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public User getUser() {
+        User user = new User();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setAge(age);
+        user.setRoles(new HashSet<>(roles));
+        return user;
     }
 }
