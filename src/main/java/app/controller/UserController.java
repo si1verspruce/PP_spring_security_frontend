@@ -1,7 +1,5 @@
 package app.controller;
 
-import app.dto.UserDto;
-import app.model.Role;
 import app.model.User;
 import app.service.RoleService;
 import app.service.UserService;
@@ -10,48 +8,65 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class UserController {
 
     private final ApplicationContext context;
+    private final UserService userService;
 
-    public UserController(ApplicationContext context) {
+    public UserController(ApplicationContext context, UserService userService) {
         this.context = context;
+        this.userService = userService;
     }
 
-    @GetMapping(value = "/")
-    public String printUser(@RequestParam(required = false) Integer roleCount, Model model) {
-        List<User> users = context.getBean(UserService.class).getUsers();
-        List<Role> roles = context.getBean(RoleService.class).getRoles();
-        UserDto userDto = new UserDto();
-        userDto.setRoles(new ArrayList<>());
-        for (int i = 0; i < (roleCount == null ? 0 : roleCount); i++) {
-            userDto.getRoles().add(new Role());
-        }
+    @GetMapping(value = "/admin")
+    public String printAdmin(Model model) {
+        List<User> users = userService.getUsers();
         model.addAttribute("users", users);
-        model.addAttribute("user", userDto);
-        model.addAttribute("roles_data", roles);
-        return "index";
+        model.addAttribute("user_dto", new User());
+        return "admin";
     }
 
-    @PostMapping(value = "/add")
-    public String addUser(UserDto userDto) {
-        context.getBean(UserService.class).add(userDto.getUser());
-        return "redirect:/";
+    @GetMapping(value = {"/user", "/"})
+    public String printUser(Model model) {
+        List<User> users = userService.getUsers();
+        model.addAttribute("users", users);
+        return "user";
     }
 
-    @PostMapping(value = "/remove")
-    public String removeUser(@RequestParam long id) {
-        context.getBean(UserService.class).delete(id);
-        return "redirect:/";
+    @GetMapping(value = "admin/add")
+    public String printAdd(Model model) {
+        model.addAttribute("user", new User());
+        model.addAttribute("roles_data", context.getBean(RoleService.class).getRoles());
+        return "add";
     }
 
-    @PostMapping(value = "/update")
-    public String updateUser(@RequestParam long idToUpdate, UserDto userDto) {
-        context.getBean(UserService.class).update(idToUpdate, userDto.getUser());
-        return "redirect:/";
+    @PostMapping(value = "admin/add")
+    public String addUser(User user, @RequestParam String[] roleNames) {
+        userService.add(user, roleNames);
+        return "redirect:/admin";
+    }
+
+    @PostMapping(value = "admin/remove")
+    public String removeUser(@RequestParam Long id) {
+        userService.delete(id);
+        return "redirect:/admin";
+    }
+
+    @GetMapping(value = "admin/update")
+    public String printUpdate(Model model, @RequestParam Long id) {
+        User user = new User();
+        user.setId(id);
+        model.addAttribute("user", user);
+        model.addAttribute("roles_data", context.getBean(RoleService.class).getRoles());
+        return "update";
+    }
+
+    @PostMapping(value = "admin/update")
+    public String updateUser(User user, @RequestParam Long idToUpdate, @RequestParam String[] roleNames) {
+        userService.update(idToUpdate, user, roleNames);
+        return "redirect:/admin";
     }
 }

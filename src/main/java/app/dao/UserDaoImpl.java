@@ -2,6 +2,7 @@ package app.dao;
 
 import app.model.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +16,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getUsers() {
-        return em.createQuery("from User", User.class).getResultList();
+        return em.createQuery("from User u left join fetch u.roles", User.class).getResultList();
     }
 
     @Override
@@ -35,8 +36,24 @@ public class UserDaoImpl implements UserDao {
     public void update(long idToUpdate, User user) {
         User userToUpdate = em.find(User.class, idToUpdate);
         if (userToUpdate != null) {
-            userToUpdate.mergeWith(user);
-            em.merge(userToUpdate);
+            em.merge(mergePersistentWithModel(userToUpdate, user));
         }
+    }
+
+    @Override
+    public User getUserByLogin(String login) {
+        try {
+            return em.createQuery("from User u left join fetch u.roles where u.login = :login", User.class)
+                    .setParameter("login", login).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    private User mergePersistentWithModel(User persistent, User model) {
+        long id = persistent.getId();
+        persistent = model;
+        persistent.setId(id);
+        return persistent;
     }
 }

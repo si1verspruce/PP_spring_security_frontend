@@ -1,12 +1,16 @@
 package app.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +25,13 @@ public class User {
     @Column(name = "age")
     private int age;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @Column(name = "login", unique = true, nullable = false)
+    private String login;
+
+    @Column(name = "password")
+    private String password;
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -45,6 +55,29 @@ public class User {
         return age;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.copyOf(roles);
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -65,10 +98,11 @@ public class User {
         this.roles = roles;
     }
 
-    public void mergeWith(User user) {
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.age = user.getAge();
-        this.roles = user.getRoles();
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
