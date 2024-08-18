@@ -50,6 +50,16 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
+    public User getById(long id) {
+        try {
+            return em.createQuery("from User u left join fetch u.roles where u.id = :id", User.class)
+                    .setParameter("id", id).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
     private User mergePersistentWithModel(User persistent, User model) {
         long id = persistent.getId();
         persistent = model;

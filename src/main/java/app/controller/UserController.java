@@ -4,6 +4,7 @@ import app.model.User;
 import app.service.RoleService;
 import app.service.UserService;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +26,14 @@ public class UserController {
     public String printAdmin(Model model) {
         List<User> users = userService.getUsers();
         model.addAttribute("users", users);
-        model.addAttribute("user_dto", new User());
         return "admin";
     }
 
     @GetMapping(value = {"/user", "/"})
     public String printUser(Model model) {
-        List<User> users = userService.getUsers();
-        model.addAttribute("users", users);
+        User user = (User) userService.loadUserByUsername(
+                SecurityContextHolder.getContext().getAuthentication().getName());
+        model.addAttribute("user", user);
         return "user";
     }
 
@@ -47,6 +48,12 @@ public class UserController {
     public String addUser(User user, @RequestParam String[] roleNames) {
         userService.add(user, roleNames);
         return "redirect:/admin";
+    }
+
+    @GetMapping(value = "admin/remove")
+    public String printRemove(Model model, @RequestParam Long id) {
+        model.addAttribute("user", userService.getById(id));
+        return "remove";
     }
 
     @PostMapping(value = "admin/remove")

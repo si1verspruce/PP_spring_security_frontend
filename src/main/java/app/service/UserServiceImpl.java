@@ -5,7 +5,6 @@ import app.model.Role;
 import app.model.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final ApplicationContext context;
     private final UserDao userDao;
@@ -66,6 +65,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userDao.getUserByLogin(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
+        }
+        return user;
+    }
+
+    @Transactional
+    @Override
+    public User getById(long id){
+        User user = userDao.getById(id);
+        if (user == null) {
+            throw new RuntimeException("User with id " + id + " not found");
         }
         return user;
     }
