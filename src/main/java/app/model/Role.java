@@ -1,26 +1,30 @@
 package app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "role")
+@JsonIgnoreProperties({"users"})
 public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @JsonProperty("id")
+    private Long id;
 
     @Column(name = "authority")
+    @JsonProperty("authority")
     private String authority;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private Set<User> users;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

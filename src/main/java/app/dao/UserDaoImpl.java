@@ -25,7 +25,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         User attachedUser = em.find(User.class, id);
         if (attachedUser != null) {
             em.remove(attachedUser);
@@ -33,7 +33,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void update(long idToUpdate, User user) {
+    public void update(Long idToUpdate, User user) {
         User userToUpdate = em.find(User.class, idToUpdate);
         if (userToUpdate != null) {
             em.merge(mergePersistentWithModel(userToUpdate, user));
@@ -51,7 +51,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getById(long id) {
+    public User getById(Long id) {
         try {
             return em.createQuery("from User u left join fetch u.roles where u.id = :id", User.class)
                     .setParameter("id", id).getSingleResult();
@@ -61,7 +61,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private User mergePersistentWithModel(User persistent, User model) {
-        long id = persistent.getId();
+        Long id = persistent.getId();
         persistent = model;
         persistent.setId(id);
         return persistent;

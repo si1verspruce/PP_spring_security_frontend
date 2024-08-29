@@ -1,11 +1,12 @@
 package app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,32 +15,39 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @JsonProperty("id")
+    private Long id;
 
     @Column(name = "first_name")
+    @JsonProperty("firstName")
     private String firstName;
 
     @Column(name = "last_name")
+    @JsonProperty("lastName")
     private String lastName;
 
     @Column(name = "age")
+    @JsonProperty("age")
     private int age;
 
     @Column(name = "login", unique = true, nullable = false)
+    @JsonProperty("username")
     private String login;
 
     @Column(name = "password")
+    @JsonProperty("password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonProperty("authorities")
     private Set<Role> roles;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -55,16 +63,13 @@ public class User implements UserDetails {
         return age;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.copyOf(roles);
+        return roles;
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -74,7 +79,7 @@ public class User implements UserDetails {
         return login;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -90,10 +95,6 @@ public class User implements UserDetails {
         this.age = age;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
@@ -104,5 +105,18 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }
